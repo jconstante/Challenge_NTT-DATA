@@ -37,7 +37,7 @@ namespace Persistencia.Api.Repository
 
                 if (detalle != null)
                 {
-                    return false;
+                    throw new Exception("Persona ya existe");
                 }
 
                 model.FechaCreacion = DateTime.Now;
@@ -58,14 +58,14 @@ namespace Persistencia.Api.Repository
         {
             try
             {
-                var detalle = await _context.Personas.Where(d => d.IdPersona == model.IdPersona).FirstOrDefaultAsync();
+                var persona = await _context.Personas.Where(d => d.IdPersona == model.IdPersona).FirstOrDefaultAsync();
 
-                if (detalle != null)
+                if (persona == null)
                 {
-                    return false;
+                    throw new Exception("Persona no existe");
                 }
 
-                await _context.Personas.AddAsync(model);
+                persona.FechaCreacion = DateTime.Now;
                 int rows = await _context.SaveChangesAsync();
 
                 return rows > 0;
@@ -81,8 +81,14 @@ namespace Persistencia.Api.Repository
         {
             try
             {
-                var detalle = await _context.Personas.Where(d => d.IdPersona == id).FirstOrDefaultAsync();
+                var persona = await _context.Personas.Where(d => d.IdPersona == id).FirstOrDefaultAsync();
 
+                if (persona == null)
+                {
+                    throw new Exception("Persona no existe");
+                }
+
+                persona.FechaModificacion = DateTime.Now;
                 int rows = await _context.SaveChangesAsync();
 
                 return rows > 0;
